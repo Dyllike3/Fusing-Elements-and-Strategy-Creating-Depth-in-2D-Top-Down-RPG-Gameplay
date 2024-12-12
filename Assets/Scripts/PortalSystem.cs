@@ -31,7 +31,6 @@ public class PortalSystem : MonoBehaviour
 
                 // Activate the target area
                 targetArea?.ActivateArea();
-                Debug.Log("222");
                 // Teleport the player to the target portal
                 collision.transform.position = targetPortal.position;
                 Debug.Log($"Player teleported to: {targetPortal.name}");

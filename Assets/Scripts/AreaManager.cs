@@ -19,11 +19,11 @@ public class AreaManager : MonoBehaviour
 
         isActive = true;
         areaEnvironment.SetActive(true); // Enable the area environment
-        Debug.Log("333");
         // Start spawning enemies
         foreach (var spawner in enemySpawners)
         {
-            spawner.gameObject.SetActive(true); // Activate the spawner
+            spawner.gameObject.SetActive(true);
+            spawner.isActive = true;// Activate the spawner
             spawner.SpawnEnemy(); // Start spawning
         }
 
@@ -33,15 +33,14 @@ public class AreaManager : MonoBehaviour
     public void DeactivateArea()
     {
         if (!isActive) return; // Prevent double deactivation
-
         isActive = false;
         areaEnvironment.SetActive(false); // Disable the area environment
-
         // Clear all active enemies in the area
         foreach (var spawner in enemySpawners)
         {
-            spawner.ClearEnemies();
             spawner.gameObject.SetActive(false); // Deactivate the spawner
+            spawner.ClearEnemies();
+            spawner.isActive = false;
         }
 
         Debug.Log($"Area {gameObject.name} deactivated!");

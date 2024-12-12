@@ -22,7 +22,6 @@ public class EnemySpawner : MonoBehaviour
             return;
         }
 
-        Debug.Log("1111");
         // Randomly select a spawn point
         Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
 
@@ -56,8 +55,9 @@ public class EnemySpawner : MonoBehaviour
 
     public void ClearEnemies()
     {
+        Debug.Log("888");
         if (!isActive) return;
-
+        Debug.Log("999");
         foreach (var enemy in activeEnemies)
         {
             if (enemy != null)
