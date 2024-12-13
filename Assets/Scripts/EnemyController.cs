@@ -5,10 +5,12 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    public float health; // Enemy's health
-    public float knockBackTime = 0.5f; // Duration of knockback effect
-    private float knockBackCounter; // Timer for knockback
-    private bool isKnockedBack = false; // Track if the enemy is in knockback state
+    public float health = 50f; // Enemy's health
+    public float damage = 10f; // Damage dealt to the player on collision
+    public float knockBackTime = 0.5f;
+
+    private float knockBackCounter;
+    private bool isKnockedBack = false;
 
     public event Action<EnemyController> OnDeath;
 
@@ -52,7 +54,7 @@ public class EnemyController : MonoBehaviour
 
         if (knockBackCounter <= 0)
         {
-            isKnockedBack = false; // Exit knockback state
+            isKnockedBack = false;
         }
     }
 
@@ -64,7 +66,7 @@ public class EnemyController : MonoBehaviour
 
         if (health <= 0)
         {
-            Die(); // Destroy the enemy when health is 0
+            Die();
         }
     }
 
@@ -74,20 +76,17 @@ public class EnemyController : MonoBehaviour
 
         if (shouldKnockback)
         {
-            isKnockedBack = true; // Enter knockback state
+            isKnockedBack = true;
             knockBackCounter = knockBackTime;
 
-            // Apply knockback force (optional customization)
-            rigidBody2D.velocity = Vector2.zero; // Stop current movement
+            rigidBody2D.velocity = Vector2.zero;
         }
     }
 
-    private void Die()
+    public virtual void Die()
     {
-        // Trigger the OnDeath event
         OnDeath?.Invoke(this);
-
-        Destroy(gameObject); // Destroy the enemy
+        Destroy(gameObject);
     }
 }
 

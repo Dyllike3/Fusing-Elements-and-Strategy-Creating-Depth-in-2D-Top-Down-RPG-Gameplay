@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyDamager : MonoBehaviour
@@ -24,9 +22,7 @@ public class EnemyDamager : MonoBehaviour
         {
             if (collision.CompareTag("Enemy"))
             {
-                //print("Zone Weapon Take Damage On Enemy");
                 enemiesInRange.Add(collision.GetComponent<EnemyController>());
-
             }
         }
         else
@@ -36,18 +32,16 @@ public class EnemyDamager : MonoBehaviour
                 EnemyController enemy = collision.GetComponent<EnemyController>();
                 if (enemy != null)
                 {
-                    enemy.TakeDamage(damageAmount);
+                    float adjustedDamage = AdjustDamageBasedOnArea();
+                    enemy.TakeDamage(adjustedDamage);
                 }
 
                 if (destroyOnContact)
                 {
                     Destroy(gameObject);
                 }
-
             }
-
         }
-
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -77,12 +71,12 @@ public class EnemyDamager : MonoBehaviour
             {
                 damageCounter = timeBetweenDamage;
 
-
                 for (int i = 0; i < enemiesInRange.Count; i++)
                 {
                     if (enemiesInRange[i] != null)
                     {
-                        enemiesInRange[i].TakeDamage(damageAmount, shouldKnockback);
+                        float adjustedDamage = AdjustDamageBasedOnArea();
+                        enemiesInRange[i].TakeDamage(adjustedDamage, shouldKnockback);
                     }
                     else
                     {
@@ -93,4 +87,51 @@ public class EnemyDamager : MonoBehaviour
             }
         }
     }
+
+    private float AdjustDamageBasedOnArea()
+    {
+        // Find the active area
+        AreaManager activeArea = FindObjectOfType<AreaManager>();
+
+        if (activeArea == null)
+        {
+            Debug.LogWarning("No active AreaManager found. Using default damage.");
+            return damageAmount; // Return default damage if no active area is found
+        }
+
+        string areaElement = activeArea.areaElement;
+
+        // Adjust damage based on element relationship
+        if (mainElement == areaElement)
+        {
+            Debug.Log("Spell element matches the area element. Increasing damage by 25%.");
+            return damageAmount * 1.25f; // Increase damage by 25%
+        }
+        else if (IsConflict(mainElement, areaElement))
+        {
+            Debug.Log("Spell element conflicts with the area element. Decreasing damage by 25%.");
+            return damageAmount * 0.75f; // Decrease damage by 25%
+        }
+
+        return damageAmount; // Neutral element, no adjustment
+    }
+
+    private bool IsConflict(string elementA, string elementB)
+    {
+        Dictionary<string, string[]> conflicts = new Dictionary<string, string[]>
+        {
+            { "Metal", new string[] { "Wood", "Fire" } },
+            { "Wood", new string[] { "Earth", "Metal" } },
+            { "Water", new string[] { "Fire", "Earth" } },
+            { "Fire", new string[] { "Metal", "Water" } },
+            { "Earth", new string[] { "Wood", "Water" } }
+        };
+
+        if (conflicts.ContainsKey(elementA))
+        {
+            return System.Array.Exists(conflicts[elementA], conflict => conflict == elementB);
+        }
+        return false;
+    }
 }
+

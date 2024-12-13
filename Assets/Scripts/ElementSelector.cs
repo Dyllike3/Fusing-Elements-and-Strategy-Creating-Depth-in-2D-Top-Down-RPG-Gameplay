@@ -194,23 +194,36 @@ public class ElementSelector : MonoBehaviour
 
             // Get mouse position and direction
             Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mousePosition.z = 0;
+            mousePosition.z = 0; // Ensure the Z position is zero for a 2D environment
             Vector3 direction = (mousePosition - firePoint.position).normalized;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
 
-            // Instantiate the spell
-            GameObject spellObject = Instantiate(spellPrefab, firePoint.position, Quaternion.Euler(0, 0, angle));
+            // Instantiate the spell at the firePoint
+            GameObject spellObject = Instantiate(spellPrefab, firePoint.position, Quaternion.identity);
             spellObject.SetActive(true);
 
-            // Configure the EnemyDamager on the instantiated spell
+            // Configure the Projectile script
+            Projectile projectile = spellObject.GetComponent<Projectile>();
+            if (projectile != null)
+            {
+                projectile.target = null; // No specific target, just fly toward the mouse position
+                projectile.lifeTime = 5f; // Example lifetime
+            }
+
+            // Add movement to the projectile toward the mouse position
+            Rigidbody2D rb = spellObject.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                rb.velocity = direction * projectile.speed;
+            }
+
+            // Configure the EnemyDamager script
             EnemyDamager damager = spellObject.GetComponent<EnemyDamager>();
             if (damager != null)
             {
-                damager.damageAmount = 20f; // Set default damage (adjust as needed)
+                damager.damageAmount = 20f; // Set damage (adjust as needed)
                 damager.shouldKnockback = false; // Example: no knockback
                 damager.damageOverTime = false; // Example: no over-time damage
-                damager.lifeTime = 5f; // Example lifetime
-                damager.destroyOnContact = true; // Example: destroy on contact
+                damager.destroyOnContact = true; // Destroy on contact
             }
 
             Debug.Log($"Casted {spell.spellName}");
@@ -222,6 +235,7 @@ public class ElementSelector : MonoBehaviour
 
         ResetSelection();
     }
+
 
     private void ResetSelection()
     {

@@ -5,6 +5,7 @@ public class AreaManager : MonoBehaviour
 {
     public List<EnemySpawner> enemySpawners; // List of all enemy spawners in this area
     public GameObject areaEnvironment; // Environment objects (e.g., tilemaps, walls)
+    public string areaElement; // Main element of the area
     public bool isActive = true; // Tracks if the area is currently active
 
     private void Start()
@@ -19,12 +20,14 @@ public class AreaManager : MonoBehaviour
 
         isActive = true;
         areaEnvironment.SetActive(true); // Enable the area environment
+        Debug.Log($"Environment for area {gameObject.name} activated.");
         // Start spawning enemies
         foreach (var spawner in enemySpawners)
         {
             spawner.gameObject.SetActive(true);
             spawner.isActive = true;// Activate the spawner
             spawner.SpawnEnemy(); // Start spawning
+            Debug.Log($"Spawner {spawner.name} activated.");
         }
 
         Debug.Log($"Area {gameObject.name} activated!");

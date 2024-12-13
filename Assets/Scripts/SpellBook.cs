@@ -5,6 +5,7 @@ using UnityEngine;
 public class SpellData
 {
     public string spellName;
+    public string fancyName;
     public GameObject prefab;
     public string mainElement; // Primary element for interactions
 }
